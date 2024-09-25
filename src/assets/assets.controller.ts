@@ -160,7 +160,7 @@ export class AssetsController {
   }
 
   @Get('/floor/:floorNumber')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAssetsByFloor(
     @Param('floorNumber') floorNumber: string,
   ): Promise<any> {
@@ -175,7 +175,7 @@ export class AssetsController {
   }
 
   @Get('/floor/:floorNumber/:department/:zone')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAssetsByDepartment(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,
