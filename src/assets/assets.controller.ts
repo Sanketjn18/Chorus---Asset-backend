@@ -122,7 +122,7 @@ export class AssetsController {
 
   @Post('/assetsList')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAssetsBy(@Body() groupBy: GroupByFilterDto): Promise<any> {
     this.logger.log('Get assets list by group endpoint called');
     const assets = await this.assetsService.getGroupBy(groupBy);
@@ -132,7 +132,7 @@ export class AssetsController {
 
   @Get('/description/all')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAssetsByDescription(
     @Query('description') description: string,
     @Query('skip') skip = 0,
@@ -151,7 +151,7 @@ export class AssetsController {
   }
 
   @Get('/floor/all')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAllFoor() {
     this.logger.log('Get all floors endpoint called');
     const floors = await this.assetsService.getAllFloor();
@@ -194,7 +194,7 @@ export class AssetsController {
   }
 
   @Get('/floor/:floorNumber/:department/:zone/:description')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async getAssetByDescriptionForDepartmentAndFloor(
     @Param('floorNumber') floorNumber: string,
     @Param('department') department: string,
