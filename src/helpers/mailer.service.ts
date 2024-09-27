@@ -191,9 +191,6 @@ export class MailerService {
       this.logger.error(
         'Sender email is not defined in the environment variables.',
       );
-      throw new Error(
-        'Sender email is not defined in the environment variables.',
-      );
     }
   }
 
@@ -208,7 +205,6 @@ export class MailerService {
       this.logger.log(`OTP email sent to ${to}`);
     } catch (error) {
       this.logger.error(`Failed to send email: ${error.message}`);
-      throw new Error('Failed to send email');
     }
   }
 
@@ -265,7 +261,6 @@ export class MailerService {
       this.logger.log(`Welcome email sent to ${to}`);
     } catch (error) {
       this.logger.error(`Failed to send email: ${error.message}`);
-      throw new Error('Failed to send email');
     }
   }
   generateOtp(): string {
