@@ -27,7 +27,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : { message: 'Internal server error' };
 
     // Log the error for debugging purposes
-    this.logError(exception, request);
+    // this.logError(exception, request);
 
     // Format and send the response
     response.status(status).json({

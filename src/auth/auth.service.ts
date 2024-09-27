@@ -69,7 +69,7 @@ export class AuthService {
 
       return { message: 'User Registered successfully' };
     } catch (error) {
-      this.logger.error(`Registration failed: ${error.message}`, error.stack);
+      this.logger.error(`Registration failed: ${error.message}`);
       throw new InternalServerErrorException('Failed to register user');
     }
   }
@@ -97,7 +97,7 @@ export class AuthService {
           { otp, email: lowercasedEmail },
           300000,
         ); // TTL 5 minutes
-        this.logger.log(`OTP:- ${otp} generated for email ${lowercasedEmail}`);
+        this.logger.log(`OTP generated for email ${lowercasedEmail}`);
         await this.mailerService.sendOtpEmail(lowercasedEmail, otp);
         return { hashedUser, isUserVerified: false };
       } else {
@@ -108,10 +108,7 @@ export class AuthService {
         return { hashedUser, isUserVerified: true };
       }
     } catch (error) {
-      this.logger.error(
-        `Login initialization failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Login initialization failed: ${error.message}`);
       throw new InternalServerErrorException(
         'Failed to initiate login process',
       );
@@ -143,7 +140,7 @@ export class AuthService {
       this.logger.log(`User logged in with email ${lowercasedEmail}`);
       return { user: sanitizedUser, accessToken };
     } catch (error) {
-      this.logger.error(`Login failed: ${error.message}`, error.stack);
+      this.logger.error(`Login failed: ${error.message}`);
       throw new InternalServerErrorException('Failed to login');
     }
   }
@@ -175,15 +172,12 @@ export class AuthService {
         300000,
       );
 
-      this.logger.log(`OTP:- ${otp} generated for email ${lowercasedEmail}`);
+      this.logger.log(`OTP generated for email ${lowercasedEmail}`);
       await this.mailerService.sendOtpEmail(lowercasedEmail, otp);
 
       return { message: 'otp sent successfully', hashedUser };
     } catch (error) {
-      this.logger.error(
-        `Forget Password failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Forget Password failed: ${error.message}`);
       throw new InternalServerErrorException(
         'Failed to initiate password reset',
       );
@@ -219,10 +213,7 @@ export class AuthService {
 
       return { message: 'OTP verified successfully.', access_token };
     } catch (error) {
-      this.logger.error(
-        `OTP verification failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`OTP verification failed: ${error.message}`);
       throw new InternalServerErrorException('Failed to verify OTP');
     }
   }
@@ -252,7 +243,7 @@ export class AuthService {
       await this.userService.updateUser(user);
       return { message: 'Password reset successfully' };
     } catch (error) {
-      this.logger.error(`Reset Password failed: ${error.message}`, error.stack);
+      this.logger.error(`Reset Password failed: ${error.message}`);
       throw new InternalServerErrorException('Failed to reset password');
     }
   }
@@ -287,10 +278,7 @@ export class AuthService {
       });
       return { user: sanitizedUser, accessToken };
     } catch (error) {
-      this.logger.error(
-        `Password initialization failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Password initialization failed: ${error.message}`);
       throw new InternalServerErrorException('Failed to initialize password');
     }
   }

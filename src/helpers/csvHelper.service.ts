@@ -36,21 +36,6 @@ export class CsvHelperService {
       const matchedKey = Object.keys(row).find((key) => regex.test(key));
       return matchedKey ? row[matchedKey] : null;
     };
-
-    const parseDate = (
-      dateString: string | null,
-      hoursToSubtract: number = 0,
-    ): string | null => {
-      if (!dateString) return null; // Return null if dateString is null or empty
-      const parsedDate = Date.parse(dateString); // Parse the date string
-      if (!isNaN(parsedDate)) {
-        // Ensure the date is valid
-        const date = new Date(parsedDate);
-        date.setHours(date.getHours() - hoursToSubtract); // Subtract the specified hours
-        return date.toISOString(); // Return the ISO string of the adjusted date
-      }
-      return null; // Return null if the date is invalid
-    };
     // const parseDate = (
     //   dateString: string | null,
     //   hoursToSubtract: number = 0,

@@ -28,9 +28,9 @@ export class AuthController {
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() RegisterUser: RegisterUserDto) {
-    this.logger.log('Register endpoint called');
-    const result = await this.authService.register(RegisterUser);
+  async register(@Body() registerUser: RegisterUserDto) {
+    this.logger.log(`Register endpoint called for user ${registerUser.email}`);
+    const result = await this.authService.register(registerUser);
     this.logger.log('User registered successfully');
     return result;
   }
@@ -93,9 +93,7 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ transform: true }))
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
-    this.logger.log(
-      `VerifyOtp endpoint called for hashed user: ${verifyOtpDto.hashedUser}`,
-    );
+    this.logger.log(`VerifyOtp endpoint called`);
     const token = await this.authService.verifyOtp(
       verifyOtpDto.hashedUser,
       verifyOtpDto.otp,

@@ -29,7 +29,6 @@ import { Express } from 'express';
 import { TransformDateInterceptor } from 'src/Interceptors/transform.date.interceptor';
 
 @Controller('assets')
-@UseInterceptors(TransformDateInterceptor)
 export class AssetsController {
   private readonly logger = new Logger(AssetsController.name); // Initialize logger
 
@@ -79,10 +78,7 @@ export class AssetsController {
         message: 'CSV file uploaded and processed successfully.',
       };
     } catch (error) {
-      this.logger.error(
-        `Error uploading CSV file: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error uploading CSV file: ${error.message}`);
       throw new InternalServerErrorException(
         `Failed to process CSV: ${error.message}`,
       );
@@ -91,13 +87,16 @@ export class AssetsController {
 
   @Post('/search')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(TransformDateInterceptor)
   @UseGuards(JwtAuthGuard)
   async getAssets(
     @Body() assetsSeachFilterDto: SearchFilterAssetsDto,
     @Req() req,
   ): Promise<Asset[]> {
     const userEmail = req.user.email; // Extract user email from JwtAuthGuard
-    this.logger.log(`User ${userEmail} called search assets endpoint`);
+    this.logger.log(
+      `User ${userEmail} called search assets endpoint with searchQuery- ${assetsSeachFilterDto.searchQuery}`,
+    );
     const assets = await this.assetsService.getAssets(
       assetsSeachFilterDto,
       userEmail,
@@ -107,6 +106,7 @@ export class AssetsController {
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(TransformDateInterceptor)
   @UseGuards(JwtAuthGuard)
   async getAssetByDeviceId(
     @Param('id') deviceId: string,
@@ -137,6 +137,7 @@ export class AssetsController {
 
   @Get('/description/all')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(TransformDateInterceptor)
   @UseGuards(JwtAuthGuard)
   async getAssetsByDescription(
     @Query('description') description: string,
@@ -144,10 +145,10 @@ export class AssetsController {
     @Query('limit') limit = 10,
     @Req() req,
   ): Promise<any> {
-    // const userEmail = req.user.email; // Extract user email from JwtAuthGuard
-    // this.logger.log(
-    //   `User ${userEmail} called get assets by description endpoint with description: ${description}`,
-    // );
+    const userEmail = req.user.email; // Extract user email from JwtAuthGuard
+    this.logger.log(
+      `User ${userEmail} called get assets by description endpoint with description: ${description}`,
+    );
     const assets = await this.assetsService.getAssetsByDescription(
       description,
       Number(skip),
@@ -200,6 +201,7 @@ export class AssetsController {
   }
 
   @Get('/floor/:floorNumber/:department/:zone/:description')
+  @UseInterceptors(TransformDateInterceptor)
   @UseGuards(JwtAuthGuard)
   async getAssetByDescriptionForDepartmentAndFloor(
     @Param('floorNumber') floorNumber: string,

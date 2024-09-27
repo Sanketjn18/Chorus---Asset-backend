@@ -41,11 +41,6 @@ export class UserService {
   async findUserByEmail(email: string): Promise<User> {
     try {
       const user = await this.userRepository.findByEmail(email);
-      if (!user) {
-        this.logger.warn(`User not found for email: ${email}`);
-        throw new NotFoundException('User not found');
-      }
-      this.logger.log(`User found for email: ${email}`);
       return user;
     } catch (error) {
       this.handleUnexpectedError(error, 'findUserByEmail');
@@ -133,10 +128,7 @@ export class UserService {
 
   // Handle unexpected errors
   private handleUnexpectedError(error: any, methodName: string): void {
-    this.logger.error(
-      `Unexpected error in ${methodName}: ${error.message}`,
-      error.stack,
-    );
+    this.logger.error(`Unexpected error in ${methodName}: ${error.message}`);
     throw new InternalServerErrorException(
       'An unexpected error occurred. Please try again later.',
     );

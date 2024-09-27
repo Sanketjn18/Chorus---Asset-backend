@@ -19,6 +19,9 @@ export class TransformDateInterceptor implements NestInterceptor {
           data.assetsDetails = data.assetsDetails.map((item) =>
             this.transformDates(item),
           );
+        } else if (data && Array.isArray(data)) {
+          // Apply the transformation for each object in the array
+          data = data.map((item) => this.transformDates(item));
         } else {
           // If it's a single object, apply the transformation directly
           data = this.transformDates(data);

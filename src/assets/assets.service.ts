@@ -28,7 +28,7 @@ export class AssetsService {
   //   try {
   //     return await this.assetRepository.createAsset(assetData);
   //   } catch (error) {
-  //     this.logger.error(`Error creating asset: ${error.message}`, error.stack);
+  //     this.logger.error(`Error creating asset: ${error.message}`);
   //     throw new InternalServerErrorException('Failed to create asset');
   //   }
   // }
@@ -50,7 +50,6 @@ export class AssetsService {
     } catch (error) {
       this.logger.error(
         `Error fetching asset by deviceId: ${deviceId}, Error: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException('Failed to fetch asset');
     }
@@ -73,7 +72,6 @@ export class AssetsService {
     } catch (error) {
       this.logger.error(
         `Error loading CSV data into staging table: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException(
         'Failed to load CSV data into staging table',
@@ -109,10 +107,7 @@ export class AssetsService {
       this.logger.log(`Total processing time: ${processingTime} ms`);
       return { message: 'CSV file processed and synchronized successfully.' };
     } catch (error) {
-      this.logger.error(
-        `Error processing CSV file: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error processing CSV file: ${error.message}`);
 
       // Attempt to delete the file if an error occurs
       fs.unlink(filePath, (err) => {
@@ -155,7 +150,7 @@ export class AssetsService {
 
       return assetsDetails;
     } catch (error) {
-      this.logger.error(`Error fetching assets: ${error.message}`, error.stack);
+      this.logger.error(`Error fetching assets: ${error.message}`);
       throw new InternalServerErrorException('Failed to fetch assets');
     }
   }
@@ -165,10 +160,7 @@ export class AssetsService {
       const result = await this.assetRepository.getMonitoringData();
       return result;
     } catch (error) {
-      this.logger.error(
-        `Error fetching group data: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error fetching group data: ${error.message}`);
       throw new InternalServerErrorException('Failed to fetch group data');
     }
   }
@@ -188,12 +180,10 @@ export class AssetsService {
         skip,
         limit,
       );
-      console.log('assetsDetails', assetsDetails);
       return { assetsDetails, totalCount };
     } catch (error) {
       this.logger.error(
         `Error fetching assets by description: ${description}, Error: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException(
         'Failed to fetch assets by description',
@@ -205,10 +195,7 @@ export class AssetsService {
     try {
       return await this.assetRepository.getAllFloor();
     } catch (error) {
-      this.logger.error(
-        `Error fetching floor data: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error fetching floor data: ${error.message}`);
       throw new InternalServerErrorException('Failed to fetch floor data');
     }
   }
@@ -219,10 +206,7 @@ export class AssetsService {
         floor,
       );
     } catch (error) {
-      this.logger.error(
-        `Error fetching assets by floor: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error fetching assets by floor: ${error.message}`);
       throw new InternalServerErrorException('Failed to fetch assets by floor');
     }
   }
@@ -241,7 +225,6 @@ export class AssetsService {
     } catch (error) {
       this.logger.error(
         `Error fetching assets by department: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException(
         'Failed to fetch assets by department',
@@ -265,7 +248,6 @@ export class AssetsService {
     } catch (error) {
       this.logger.error(
         `Error fetching asset by description: ${error.message}`,
-        error.stack,
       );
       throw new InternalServerErrorException(
         'Failed to fetch asset by description',
