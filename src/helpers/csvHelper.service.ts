@@ -40,18 +40,33 @@ export class CsvHelperService {
     const parseDate = (
       dateString: string | null,
       hoursToSubtract: number = 0,
-    ) => {
+    ): string | null => {
+      if (!dateString) return null; // Return null if dateString is null or empty
       const parsedDate = Date.parse(dateString); // Parse the date string
       if (!isNaN(parsedDate)) {
+        // Ensure the date is valid
         const date = new Date(parsedDate);
-        date.setHours(date.getHours() - hoursToSubtract);
-        return date;
+        date.setHours(date.getHours() - hoursToSubtract); // Subtract the specified hours
+        return date.toISOString(); // Return the ISO string of the adjusted date
       }
-      return null; // Return null if date is invalid
+      return null; // Return null if the date is invalid
     };
+    // const parseDate = (
+    //   dateString: string | null,
+    //   hoursToSubtract: number = 0,
+    // ) => {
+    //   const parsedDate = Date.parse(dateString); // Parse the date string
+    //   if (!isNaN(parsedDate)) {
+    //     const date = new Date(parsedDate);
+    //     date.setHours(date.getHours() - hoursToSubtract);
+    //     return date;
+    //   }
+    //   return null; // Return null if date is invalid
+    // };
 
     const description = extractField(['Description']);
     const lastLocation = extractField(['Last Location']);
+    const lastSeenTime = extractField(['Last Seen Time']);
 
     if (!description || !lastLocation) {
       return null;
@@ -75,17 +90,17 @@ export class CsvHelperService {
 
     return {
       eventId: extractField(['Event ID']),
-      egressEventTime: parseDate(extractField(['Egress Event'])),
+      egressEventTime: extractField(['Egress Event']),
       deviceId: extractField(['Device ID']),
       tagNumber: extractField(['Tag Number']),
       description: description,
       manufacturer: extractField(['Manufacturer']),
       modelNumber: extractField(['Model Number']),
-      lastSeenTime: parseDate(extractField(['Last Seen Time']), 5), // Now subtracting 5 hours
+      lastSeenTime: lastSeenTime,
       lastLocation: lastLocation,
       previousEgressLocation: extractField(['Previous Egress Location']),
       status: extractField(['Status']),
-      returnedAt: parseDate(extractField(['Returned At'])),
+      returnedAt: extractField(['Returned At']),
       unableToLocate:
         extractField(['Unable to locate']) === 'Y'
           ? true

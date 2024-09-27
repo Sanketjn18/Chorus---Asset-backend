@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
+import { TransformDateInterceptor } from './Interceptors/transform.date.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +12,7 @@ async function bootstrap() {
   // app.setGlobalPrefix('api');
 
   app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalInterceptors(new TransformDateInterceptor());
   app.enableCors({ origin: '*' });
   app.useGlobalPipes(
     new ValidationPipe({

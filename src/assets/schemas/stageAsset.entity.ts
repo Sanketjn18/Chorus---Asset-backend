@@ -9,8 +9,8 @@ export class StageAsset {
   @Column({ nullable: true })
   eventId: string; // Required
 
-  @Column({ type: 'timestamp', nullable: true })
-  egressEventTime: Date; // Optional
+  @Column({ nullable: true })
+  egressEventTime: string; // Optional
 
   @Column()
   deviceId: string; // Required
@@ -27,8 +27,8 @@ export class StageAsset {
   @Column({ nullable: true })
   modelNumber: string; // Required
 
-  @Column({ type: 'timestamp', nullable: true })
-  lastSeenTime: Date; // Required
+  @Column({ nullable: true })
+  lastSeenTime: string; // Required
 
   @Column({ nullable: true })
   lastLocation: string; // Required
@@ -39,8 +39,8 @@ export class StageAsset {
   @Column({ nullable: true })
   status: string; // Required
 
-  @Column({ type: 'timestamp', nullable: true })
-  returnedAt: Date; // Optional
+  @Column({ nullable: true })
+  returnedAt: string; // Optional
 
   @Column({ type: 'boolean', nullable: true })
   unableToLocate: boolean; // Required
