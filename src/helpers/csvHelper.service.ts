@@ -81,7 +81,7 @@ export class CsvHelperService {
       description: description,
       manufacturer: extractField(['Manufacturer']),
       modelNumber: extractField(['Model Number']),
-      lastSeenTime: parseDate(extractField(['Last Seen Time']), 5), // Now subtracting 5 hours
+      lastSeenTime: parseDate(extractField(['Last Seen Time']), 4), // Now subtracting 5 hours
       lastLocation: lastLocation,
       previousEgressLocation: extractField(['Previous Egress Location']),
       status: extractField(['Status']),
