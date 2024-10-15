@@ -24,12 +24,6 @@ import { CacheModule } from '@nestjs/cache-manager';
       database: process.env.POSTGRES_DB,
       autoLoadEntities: true,
       synchronize: true,
-      connectTimeoutMS: 10000, // Set a higher timeout
-      retryAttempts: 3, // Add retry attempts
-      retryDelay: 3000,
-      extra: {
-        max: 50, // Set the max pool size
-      },
       entities: [join(__dirname, './**/**.entity{.ts,.js}')],
     }),
     CacheModule.register({ isGlobal: true }),
