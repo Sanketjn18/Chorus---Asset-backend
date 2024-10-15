@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -18,6 +19,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { version } from 'os';
 
 @Controller('auth')
 export class AuthController {
@@ -116,5 +118,11 @@ export class AuthController {
     );
     this.logger.log('Password reset successfully');
     return { message: 'Password reset successfully', resetResponse };
+  }
+
+  @Get('app/version')
+  @HttpCode(HttpStatus.OK)
+  async getAppVerion() {
+    return { latestVersion: '11' };
   }
 }
