@@ -234,7 +234,7 @@ export class AssetRepository {
     description: string,
     zone: string,
   ): Promise<any> {
-    const [assetsDetails, totalCount] = await this.repository
+    const [assets, totalCount] = await this.repository
       .createQueryBuilder('asset')
       .where('asset.floor = :floor', { floor })
       .andWhere('asset.department = :department', { department })
@@ -242,7 +242,7 @@ export class AssetRepository {
       .andWhere('asset.zoneId = :zone', { zone })
       .getManyAndCount();
 
-    return { assetsDetails, totalCount };
+    return { assets, totalCount };
   }
 
   async findAllAssets(): Promise<Asset[]> {
