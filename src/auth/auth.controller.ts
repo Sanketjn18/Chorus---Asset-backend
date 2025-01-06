@@ -19,7 +19,6 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { version } from 'os';
 
 @Controller('auth')
 export class AuthController {
@@ -123,6 +122,6 @@ export class AuthController {
   @Get('app/version')
   @HttpCode(HttpStatus.OK)
   async getAppVerion() {
-    return { latestVersion: '11' };
+    return { latestVersion: '1' };
   }
 }
