@@ -123,6 +123,6 @@ export class AuthController {
   @Get('app/version')
   @HttpCode(HttpStatus.OK)
   async getAppVerion() {
-    return { latestVersion: '11' };
+    return { latestVersion: '1' };
   }
 }
