@@ -37,6 +37,7 @@
     "csv-parser": "^3.0.0",
     "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.5.45",
     "nodemailer": "^6.9.15",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

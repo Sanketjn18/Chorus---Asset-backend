@@ -29,7 +29,7 @@ export class UserRepository {
     return this.userSearchRepository.findOne({ where: { email } });
   }
 
-  async saveSearch(userData: Partial<User>): Promise<UserSearch> {
+  async saveSearch(userData: Partial<UserSearch>): Promise<UserSearch> {
     return this.userSearchRepository.save(userData);
   }
 
