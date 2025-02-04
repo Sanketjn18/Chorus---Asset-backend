@@ -232,17 +232,17 @@ export class AssetsController {
     @Body() bluetoothLogDto: BluetoothLogDto,
     @Req() req,
   ): Promise<void> {
-    const userEmail = req.user.email;
-    const logBody = { ...bluetoothLogDto, userEmail };
+    const email = req.user.email;
+    const logBody = { ...bluetoothLogDto, email };
     this.logger.log(JSON.stringify(logBody, null, 2));
-    // try {
-    //   // Make the API call to the external Bluetooth log endpoint
-    //   const response = await axios.post(
-    //     'http://35.223.244.137:8000/v1/assets/bluetooth/log',
-    //     logBody,
-    //   );
-    // } catch (error) {
-    //   this.logger.error(`API Call Failed: ${error.message}`);
-    // }
+    try {
+      // Make the API call to the external Bluetooth log endpoint
+      const response = await axios.post(
+        'http://35.223.244.137:8000/v1/assets/bluetooth/log',
+        logBody,
+      );
+    } catch (error) {
+      this.logger.error(`API Call Failed: ${error.message}`);
+    }
   }
 }
