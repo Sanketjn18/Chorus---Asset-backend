@@ -27,6 +27,8 @@ import { extname } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { TransformDateInterceptor } from 'src/Interceptors/transform.date.interceptor';
+import { BluetoothLogDto } from './dto/bluetooth.dto';
+import axios from 'axios';
 
 @Controller('assets')
 export class AssetsController {
@@ -222,5 +224,27 @@ export class AssetsController {
         zone,
       );
     return assets;
+  }
+
+  @Post('/bluetooth/log')
+  @UseGuards(JwtAuthGuard)
+  async bluetoothLogger(
+    @Body() bluetoothLogDto: BluetoothLogDto,
+    @Req() req,
+  ): Promise<void> {
+    const userEmail = req.user.email;
+    const logBody = { ...bluetoothLogDto, userEmail };
+    // this.logger.log(JSON.stringify(logBody, null, 2));
+    try {
+      // Make the API call to the external Bluetooth log endpoint
+      const response = await axios.post(
+        'http://35.223.244.137:8000/v1/assets/bluetooth/log',
+        logBody,
+      );
+
+      this.logger.log(`API Response: ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      this.logger.error(`API Call Failed: ${error.message}`);
+    }
   }
 }
