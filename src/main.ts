@@ -3,9 +3,10 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
-import { TransformDateInterceptor } from './Interceptors/transform.date.interceptor';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   // register all plugins and extension
@@ -21,7 +22,7 @@ async function bootstrap() {
     }),
   );
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-
+  logger.log(`Running in ${configService.get('ENV')} mode`);
   await app.listen(configService.get('port'));
 }
 bootstrap();
