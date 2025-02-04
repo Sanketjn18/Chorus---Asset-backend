@@ -234,17 +234,15 @@ export class AssetsController {
   ): Promise<void> {
     const userEmail = req.user.email;
     const logBody = { ...bluetoothLogDto, userEmail };
-    // this.logger.log(JSON.stringify(logBody, null, 2));
-    try {
-      // Make the API call to the external Bluetooth log endpoint
-      const response = await axios.post(
-        'http://35.223.244.137:8000/v1/assets/bluetooth/log',
-        logBody,
-      );
-
-      this.logger.log(`API Response: ${JSON.stringify(response.data)}`);
-    } catch (error) {
-      this.logger.error(`API Call Failed: ${error.message}`);
-    }
+    this.logger.log(JSON.stringify(logBody, null, 2));
+    // try {
+    //   // Make the API call to the external Bluetooth log endpoint
+    //   const response = await axios.post(
+    //     'http://35.223.244.137:8000/v1/assets/bluetooth/log',
+    //     logBody,
+    //   );
+    // } catch (error) {
+    //   this.logger.error(`API Call Failed: ${error.message}`);
+    // }
   }
 }
