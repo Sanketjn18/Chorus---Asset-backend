@@ -47,9 +47,4 @@ export class RegisterUserDto {
   })
   @IsNotEmpty()
   role: Role;
-
-  constructor(partial: Partial<RegisterUserDto>) {
-    Object.assign(this, partial);
-    this.role = partial.role ?? Role.User; // Assign default role if not provided
-  }
 }
