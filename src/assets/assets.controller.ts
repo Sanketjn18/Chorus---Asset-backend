@@ -234,7 +234,7 @@ export class AssetsController {
   ): Promise<void> {
     const email = req.user.email;
     const logBody = { ...bluetoothLogDto, email };
-    this.logger.log(JSON.stringify(logBody, null, 2));
+    // this.logger.log(JSON.stringify(logBody, null, 2));
     try {
       // Make the API call to the external Bluetooth log endpoint
       const response = await axios.post(
