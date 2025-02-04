@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AssetsModule } from './assets/assets.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { FeedbackModule } from './feedback/feedback.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     UserModule,
     AuthModule,
     AssetsModule,
+    FeedbackModule,
   ],
   controllers: [],
   providers: [],

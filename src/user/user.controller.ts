@@ -5,17 +5,19 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
   Logger,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './schemas/user.entity';
 
 @Controller('user')
 @UseGuards(JwtAuthGuard)
@@ -56,5 +58,16 @@ export class UserController {
     this.logger.log(`Past searches retrieved successfully for email: ${email}`);
 
     return searches;
+  }
+
+  @Patch('/update')
+  async updateUserProfile(
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req,
+  ): Promise<Partial<User>> {
+    this.logger.log(
+      `Update User Profile endpoint called for user: ${req.user.email}`,
+    );
+    return this.userService.updateProfile(req.user.email, updateUserDto);
   }
 }

@@ -183,7 +183,7 @@ export class AssetsService {
       return { assetsDetails, totalCount };
     } catch (error) {
       this.logger.error(
-        `Error fetching assets by description: ${description}, Error: ${error.message}`,
+        `Error fetching assets by description: ${description}, Error: ${error}`,
       );
       throw new InternalServerErrorException(
         'Failed to fetch assets by description',

@@ -37,6 +37,7 @@ export class AuthService {
         middleInitial,
         hospitalId,
         phoneNumber,
+        role,
       } = registerUserDto;
 
       const lowercasedEmail = email.toLowerCase(); // Lowercase email
@@ -60,6 +61,7 @@ export class AuthService {
       user.phoneNumber = phoneNumber;
       user.password = hashedPassword;
       user.isUserVerified = false;
+      user.role = role;
 
       this.logger.log(`Registering user with email ${lowercasedEmail}`);
       await this.userService.registerUser(user);
@@ -134,6 +136,7 @@ export class AuthService {
       const accessToken = this.jwtService.sign({
         email: user.email,
         sub: user.id,
+        role: user.role,
       });
 
       const { id, password, ...sanitizedUser } = user;
@@ -208,7 +211,7 @@ export class AuthService {
       const user = await this.userService.findUserByEmail(cachedData.email);
       user.isUserVerified = true;
       await this.userService.updateUser(user);
-      const payload = { sub: user.id, email: user.email };
+      const payload = { email: user.email, sub: user.id, role: user.role };
       const access_token = this.jwtService.sign(payload, { expiresIn: '1m' });
 
       return { message: 'OTP verified successfully.', access_token };
@@ -275,6 +278,7 @@ export class AuthService {
       const accessToken = this.jwtService.sign({
         email: user.email,
         sub: user.id,
+        role: user.role,
       });
       return { user: sanitizedUser, accessToken };
     } catch (error) {

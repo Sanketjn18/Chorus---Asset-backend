@@ -10,6 +10,7 @@ import { User } from './schemas/user.entity';
 import { UserRepository } from './repository/user.repository';
 import { QueryFailedError } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -56,6 +57,26 @@ export class UserService {
     } catch (error) {
       this.handleUnexpectedError(error, 'updateUser');
     }
+  }
+
+  async updateProfile(
+    email: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<Partial<User>> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Only update allowed fields, ignoring email and role
+    user.firstName = updateUserDto.firstName ?? user.firstName;
+    user.lastName = updateUserDto.lastName ?? user.lastName;
+    user.hospitalId = updateUserDto.hospitalId ?? user.hospitalId;
+    user.phoneNumber = updateUserDto.phoneNumber ?? user.phoneNumber;
+
+    await this.userRepository.updateUser(user);
+    const { id, password, ...sanitizedUser } = user;
+    return sanitizedUser;
   }
 
   // Change a user's password
