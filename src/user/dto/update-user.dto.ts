@@ -1,55 +1,37 @@
+// update-user.dto.ts
 import {
-  IsEmail,
-  IsNotEmpty,
   IsOptional,
   Matches,
+  IsNotEmpty,
+  IsEmail,
   IsEnum,
 } from 'class-validator';
-import { Role } from '../../user/enum/roles.enum';
+import { Role } from '../enum/roles.enum';
 
-export class RegisterUserDto {
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
+export class UpdateUserDto {
   @IsNotEmpty()
   @Matches(/^[a-zA-Z0-9!@#$%^&*()_+=-]*$/, {
     message:
       'First Name must contain only alpha-numeric and special characters.',
   })
-  firstName: string;
+  firstName?: string;
 
   @IsNotEmpty()
   @Matches(/^[a-zA-Z0-9!@#$%^&*()_+=-]*$/, {
     message:
       'Last Name must contain only alpha-numeric and special characters.',
   })
-  lastName: string;
-
-  @IsOptional()
-  // @Length(1, 1, { message: 'Middle Initial must be a single character.' })
-  middleInitial?: string;
+  lastName?: string;
 
   @IsOptional()
   @Matches(/^[a-zA-Z0-9]*$/, {
     message: 'Hospital ID must contain only alpha-numeric characters.',
   })
-  hospitalId: string;
+  hospitalId?: string;
 
   @IsOptional()
   @Matches(/^\d{3}-\d{3}-\d{4}$/, {
     message: 'Phone Number must be in the format XXX-XXX-XXXX.',
   })
   phoneNumber?: string;
-
-  @IsEnum(Role, {
-    message: 'Role must be one of the following: Admin, Supe Admin, User.',
-  })
-  @IsNotEmpty()
-  role: Role;
-
-  constructor(partial: Partial<RegisterUserDto>) {
-    Object.assign(this, partial);
-    this.role = partial.role ?? Role.User; // Assign default role if not provided
-  }
 }

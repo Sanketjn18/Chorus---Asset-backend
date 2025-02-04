@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   Length,
 } from 'class-validator';
+import { Role } from '../enum/roles.enum';
 
 @Entity('users')
 export class User {
@@ -59,6 +60,14 @@ export class User {
     message: 'Phone Number must be in the format XXX-XXX-XXXX.',
   })
   phoneNumber?: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.User,
+  })
+  @IsNotEmpty()
+  role: Role;
 
   @Column({ default: false }) // New field for user verification status
   isUserVerified: boolean;

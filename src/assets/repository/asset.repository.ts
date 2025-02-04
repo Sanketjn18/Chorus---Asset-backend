@@ -4,6 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Asset } from '../schemas/assets.entity';
 import { FilterDTO } from '../dto/searchFilterAssets.dto';
 import { StageAsset } from '../schemas/stageAsset.entity';
+import { Feedback } from '../../feedback/schemas/feedback.entity';
 
 @Injectable()
 export class AssetRepository {
@@ -92,6 +93,62 @@ export class AssetRepository {
 
     return await queryBuilder.getMany();
   }
+
+  // async getAssets(
+  //   filters: FilterDTO,
+  //   search: string,
+  //   limit: number,
+  //   skip: number,
+  // ): Promise<Asset[]> {
+  //   const { status, lastLocation } = filters;
+
+  //   const queryBuilder = this.repository.createQueryBuilder('asset');
+
+  //   // Subquery to get the latest feedback for each asset-zone pair
+  //   const latestFeedbackSubquery = queryBuilder
+  //     .subQuery()
+  //     .select('MAX(f.createdAt)', 'latestFeedbackCreatedAt')
+  //     .from(Feedback, 'f')
+  //     .where('f.deviceId = asset.deviceId')
+  //     .groupBy('f.deviceId')
+  //     .getQuery();
+
+  //   // Join with Feedback table using the subquery to get the latest feedback for each matching zone
+  //   queryBuilder.leftJoinAndSelect(
+  //     'asset.feedbacks',
+  //     'feedback',
+  //     `feedback.deviceId = asset.deviceId AND feedback.createdAt = ${latestFeedbackSubquery}`,
+  //   );
+
+  //   if (search) {
+  //     queryBuilder.andWhere(
+  //       'asset.deviceId ILIKE :search OR ' +
+  //         'asset.zoneId ILIKE :search OR ' +
+  //         'asset.description ILIKE :search OR ' +
+  //         'asset.department ILIKE :search OR ' +
+  //         'asset.tagNumber ILIKE :search OR ' +
+  //         'asset.zoneCategory ILIKE :search ',
+  //       { search: `%${search}%` },
+  //     );
+  //   }
+  //   queryBuilder.skip(skip || 0).take(limit || 10);
+
+  //   const assets = await queryBuilder.getMany();
+
+  //   // Process assets to set feedback to null if zone is different
+  //   return assets.map((asset) => {
+  //     if (
+  //       asset.feedbacks.length > 0 &&
+  //       asset.feedbacks[0].zone == asset.zoneId
+  //     ) {
+  //       asset['latestFeedback'] = asset.feedbacks[0].feedback;
+  //     } else {
+  //       asset['latestFeedback'] = null;
+  //     }
+  //     delete asset['feedbacks']; // Cleanup temporary field
+  //     return asset;
+  //   });
+  // }
 
   async groupByLocation(): Promise<any> {
     return this.repository
@@ -185,24 +242,99 @@ export class AssetRepository {
       .getCount();
   }
 
+  // async getAssetsByDescription(
+  //   description: string,
+  //   skip: number,
+  //   limit: number,
+  // ): Promise<Asset[]> {
+  //   return (
+  //     this.repository
+  //       .createQueryBuilder('asset')
+  //       .where('asset.description = :description', { description })
+  //       // .orderBy('asset.zoneCategory', 'ASC')
+  //       .orderBy(
+  //         "CASE WHEN asset.zoneCategory IN ('Non-Productive (NP)', 'Non-Productive', 'NP') THEN 1 WHEN asset.zoneCategory IN ('Productive (P)', 'Productive', 'P') THEN 2 WHEN asset.zoneCategory IS NULL THEN 3 END",
+  //         'ASC',
+  //       )
+  //       .skip(skip)
+  //       .take(limit)
+  //       .getMany()
+  //   );
+  // }
+
   async getAssetsByDescription(
     description: string,
     skip: number,
     limit: number,
   ): Promise<Asset[]> {
-    return (
-      this.repository
-        .createQueryBuilder('asset')
-        .where('asset.description = :description', { description })
-        // .orderBy('asset.zoneCategory', 'ASC')
-        .orderBy(
-          "CASE WHEN asset.zoneCategory IN ('Non-Productive (NP)', 'Non-Productive', 'NP') THEN 1 WHEN asset.zoneCategory IN ('Productive (P)', 'Productive', 'P') THEN 2 WHEN asset.zoneCategory IS NULL THEN 3 END",
-          'ASC',
+    const sqlQuery = `
+    SELECT 
+        asset.id,
+        asset."eventId",
+        asset."egressEventTime",
+        asset."deviceId",
+        asset."tagNumber",
+        asset.description,
+        asset.manufacturer,
+        asset."modelNumber",
+        asset."lastSeenTime",
+        asset."lastLocation",
+        asset."previousEgressLocation",
+        asset.status,
+        asset."returnedAt",
+        asset."unableToLocate",
+        asset."zoneId",
+        asset."zoneCategory",
+        asset.floor,
+        asset.department,
+        asset."organizationId",
+        feedback.feedback,
+        feedback.zone,
+        feedback."createdAt"
+    FROM 
+        assets AS asset
+    LEFT JOIN 
+        feedbacks AS feedback 
+    ON 
+        "feedback"."deviceId" = "asset"."deviceId" 
+        AND feedback."createdAt" = (
+            SELECT 
+                MAX(f."createdAt")
+            FROM 
+                feedbacks f
+            WHERE 
+                f."deviceId" = asset."deviceId"
+            GROUP BY 
+                f."deviceId"
         )
-        .skip(skip)
-        .take(limit)
-        .getMany()
-    );
+    WHERE 
+        asset.description = $1
+    ORDER BY 
+        CASE
+            WHEN asset."zoneCategory" IN ('Non-Productive (NP)', 'Non-Productive', 'NP') THEN 1
+            WHEN asset."zoneCategory" IN ('Productive (P)', 'Productive', 'P') THEN 2
+            ELSE 3
+        END ASC
+    LIMIT $2 OFFSET $3;
+  `;
+
+    const assets = await this.repository.query(sqlQuery, [
+      description,
+      limit,
+      skip,
+    ]);
+
+    return assets.map((asset) => {
+      if (asset.zone == asset.zoneId) {
+        asset.latestFeedback = asset.feedback;
+      } else {
+        asset.latestFeedback = null;
+      }
+      delete asset.feedback;
+      delete asset.zone;
+      delete asset.createdAt;
+      return asset;
+    });
   }
 
   async getAllFloor() {
@@ -234,13 +366,42 @@ export class AssetRepository {
     description: string,
     zone: string,
   ): Promise<any> {
-    const [assets, totalCount] = await this.repository
-      .createQueryBuilder('asset')
-      .where('asset.floor = :floor', { floor })
-      .andWhere('asset.department = :department', { department })
-      .andWhere('asset.description = :description', { description })
-      .andWhere('asset.zoneId = :zone', { zone })
-      .getManyAndCount();
+    const queryBuilder = this.repository.createQueryBuilder('asset');
+
+    // Subquery to get the latest feedback for each asset-zone pair
+    const latestFeedbackSubquery = queryBuilder
+      .subQuery()
+      .select('MAX(f.createdAt)', 'latestFeedbackCreatedAt')
+      .from(Feedback, 'f')
+      .where('f.deviceId = asset.deviceId')
+      .groupBy('f.deviceId')
+      .getQuery();
+
+    // Join with Feedback table using the subquery to get the latest feedback for each matching zone
+    queryBuilder.leftJoinAndSelect(
+      'asset.feedbacks',
+      'feedback',
+      `feedback.deviceId = asset.deviceId AND feedback.createdAt = ${latestFeedbackSubquery}`,
+    );
+
+    queryBuilder.andWhere('asset.floor = :floor', { floor });
+    queryBuilder.andWhere('asset.department = :department', { department });
+    queryBuilder.andWhere('asset.description = :description', { description });
+    queryBuilder.andWhere('asset.zoneId = :zone', { zone });
+    const [allAssets, totalCount] = await queryBuilder.getManyAndCount();
+
+    const assets = allAssets.map((asset) => {
+      if (
+        asset.feedbacks.length > 0 &&
+        asset.feedbacks[0].zone == asset.zoneId
+      ) {
+        asset['latestFeedback'] = asset.feedbacks[0].feedback;
+      } else {
+        asset['latestFeedback'] = null;
+      }
+      delete asset['feedbacks']; // Cleanup temporary field
+      return asset;
+    });
 
     return { assets, totalCount };
   }

@@ -208,10 +208,115 @@ export class MailerService {
     }
   }
 
+  // async sendWelcomeEmail(to: string, firstName: string): Promise<void> {
+  //   try {
+  //     const capitalizedFirstName =
+  //       firstName.charAt(0).toUpperCase() + firstName.slice(1);
+  //     await this.transporter.sendMail({
+  //       from: this.emailUser, // Sender address
+  //       to, // List of receivers
+  //       subject: 'Welcome to Chorus Asset Management',
+  //       html: `
+  //         <p>Hi ${capitalizedFirstName},</p>
+  //         <p>Thank you for registering with Asset management. Your account has been successfully created.</p>
+  //         <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code or clicking the link below:</p>
+  //         <p><strong>For iOS Users:</strong><br>
+  //           <a href="https://testflight.apple.com/join/QhDVnyWR" style="display:inline-block; margin-bottom:10px;">iOS Install</a><br>
+  //           <img src="cid:iosQR" alt="iOS QR Code" style="width:150px;height:150px;" /></p>
+  //         <p><strong>For Android Users:</strong><br>
+  //           <a href="http://34.171.78.199/apks/chorus.apk" style="display:inline-block; margin-bottom:10px;">Android Install</a><br>
+  //           <img src="cid:androidQR" alt="Android QR Code" style="width:150px;height:150px;" /></p>
+  //         <p>Additionally, we've attached the Chorus Asset Management User Manual to help you familiarize yourself with the platform. It contains step-by-step instructions and helpful tips to get the most out of the app.</p>
+  //         <p>Best Regards,<br>Chorus Team</p>
+  //       `,
+  //       attachments: [
+  //         {
+  //           filename: 'Chorus Asset Management User Manual.pdf',
+  //           path: path.resolve(
+  //             __dirname,
+  //             '..',
+  //             '..',
+  //             'documents',
+  //             'Chorus_Asset_Management_User_Manual.pdf',
+  //           ), // Corrected relative path
+  //         },
+  //         {
+  //           filename: 'IOS_QR.jpeg',
+  //           path: path.resolve(__dirname, '..', '..', 'documents', 'ios.jpeg'), // Corrected relative path
+  //           cid: 'iosQR', // Embedding iOS QR code using cid
+  //         },
+  //         {
+  //           filename: 'Android_QR.png',
+  //           path: path.resolve(
+  //             __dirname,
+  //             '..',
+  //             '..',
+  //             'documents',
+  //             'android.png',
+  //           ), // Corrected relative path
+  //           cid: 'androidQR', // Embedding Android QR code using cid
+  //         },
+  //       ],
+  //     });
+  //     this.logger.log(`Welcome email sent to ${to}`);
+  //   } catch (error) {
+  //     this.logger.error(`Failed to send email: ${error.message}`);
+  //   }
+  // }
+
   async sendWelcomeEmail(to: string, firstName: string): Promise<void> {
     try {
       const capitalizedFirstName =
         firstName.charAt(0).toUpperCase() + firstName.slice(1);
+
+      // Determine environment (dev or prod) from your environment variables
+      const environment = this.configService.get<string>('ENV'); // 'development' or 'production'
+
+      // Set different QR codes and links based on environment
+      const iosLink =
+        environment === 'production'
+          ? 'https://testflight.apple.com/join/QhDVnyWR' // Production iOS link
+          : 'https://testflight.apple.com/join/KDfe3tGH'; // Development iOS link
+
+      const androidLink =
+        environment === 'production'
+          ? 'http://34.56.189.142/apks/chorus.apk' // Production Android APK link
+          : 'http://35.223.244.137/apks/chorus_dev.apk'; // Development Android APK link
+
+      const iosQRPath =
+        environment === 'production'
+          ? path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'documents',
+              'iOS_chorus_prod.jpeg',
+            ) // Production iOS QR code
+          : path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'documents',
+              'iOS_chorus_dev.png',
+            ); // Development iOS QR code
+
+      const androidQRPath =
+        environment === 'production'
+          ? path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'documents',
+              'android_chorus_prod.png',
+            ) // Production Android QR code
+          : path.resolve(
+              __dirname,
+              '..',
+              '..',
+              'documents',
+              'android_chorus_dev.png',
+            ); // Development Android QR code
+
       await this.transporter.sendMail({
         from: this.emailUser, // Sender address
         to, // List of receivers
@@ -221,10 +326,10 @@ export class MailerService {
           <p>Thank you for registering with Asset management. Your account has been successfully created.</p>
           <p>To get started, you can download the Asset Management mobile app on your smartphone by scanning the appropriate QR code or clicking the link below:</p>
           <p><strong>For iOS Users:</strong><br>
-            <a href="https://testflight.apple.com/join/QhDVnyWR" style="display:inline-block; margin-bottom:10px;">iOS Install</a><br>
+            <a href="${iosLink}" style="display:inline-block; margin-bottom:10px;">iOS Install</a><br>
             <img src="cid:iosQR" alt="iOS QR Code" style="width:150px;height:150px;" /></p>
           <p><strong>For Android Users:</strong><br>
-            <a href="http://34.171.78.199/apks/chorus.apk" style="display:inline-block; margin-bottom:10px;">Android Install</a><br>
+            <a href="${androidLink}" style="display:inline-block; margin-bottom:10px;">Android Install</a><br>
             <img src="cid:androidQR" alt="Android QR Code" style="width:150px;height:150px;" /></p>
           <p>Additionally, we've attached the Chorus Asset Management User Manual to help you familiarize yourself with the platform. It contains step-by-step instructions and helpful tips to get the most out of the app.</p>
           <p>Best Regards,<br>Chorus Team</p>
@@ -238,22 +343,16 @@ export class MailerService {
               '..',
               'documents',
               'Chorus_Asset_Management_User_Manual.pdf',
-            ), // Corrected relative path
+            ), // Path to user manual
           },
           {
             filename: 'IOS_QR.jpeg',
-            path: path.resolve(__dirname, '..', '..', 'documents', 'ios.jpeg'), // Corrected relative path
+            path: iosQRPath, // Dynamic iOS QR code based on environment
             cid: 'iosQR', // Embedding iOS QR code using cid
           },
           {
             filename: 'Android_QR.png',
-            path: path.resolve(
-              __dirname,
-              '..',
-              '..',
-              'documents',
-              'android.png',
-            ), // Corrected relative path
+            path: androidQRPath, // Dynamic Android QR code based on environment
             cid: 'androidQR', // Embedding Android QR code using cid
           },
         ],

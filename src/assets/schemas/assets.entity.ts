@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Feedback } from 'src/feedback/schemas/feedback.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity('assets')
 export class Asset {
@@ -11,7 +12,7 @@ export class Asset {
   @Column({ nullable: true })
   egressEventTime: string; // Optional
 
-  @Column()
+  @Column({ unique: true })
   deviceId: string; // Required
 
   @Column({ nullable: true })
@@ -58,4 +59,7 @@ export class Asset {
 
   @Column({ nullable: true })
   organizationId: string; // Optional
+
+  @OneToMany(() => Feedback, (feedback) => feedback.asset)
+  feedbacks: Feedback[];
 }
